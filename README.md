@@ -1,68 +1,64 @@
-# Loan model fairness audit
+# Fair-lending audit
 
-A credit model can give two groups of applicants different outcomes without anyone telling it to. This repo trains a loan approval model on the German Credit dataset and measures how approval rates and error rates differ by age and by sex. It then tests two common fixes: dropping the protected columns, and setting a separate approval cutoff for each group.
+A one-page audit of a mortgage-approval model on HMDA 2025 public loan-level
+data. The page compares the decisions actually recorded with a demographics-aware
+model, a blinded model, and that blind model with per-group cutoffs, then probes
+how well the remaining columns rebuild the protected trait. `WRITEUP.md` has the
+findings.
 
-Built for the Veritas AI International High School Hackathon, November 2026. The one-page writeup is in [WRITEUP.md](WRITEUP.md).
-
-## Run it
-
-```
-pip install -r requirements.txt
-python -m audit.run_audit      # trains the models, writes tables and a figure to results/
-python app.py                  # opens the demo in your browser
-```
-
-The first run downloads the dataset from OpenML to `data/credit_g.csv` and needs an internet connection that one time. Commit that file and the `results/` folder so the demo runs offline.
-
-Logistic regression takes a few seconds for the full audit. Add `--model gbm` for gradient boosting, which takes under a minute.
-
-In Google Colab:
+## Layout
 
 ```
-!git clone https://github.com/YOUR-USERNAME/loan-fairness-audit.git
-%cd loan-fairness-audit
-!pip install -q -r requirements.txt
-!python -m audit.run_audit
+app.py            build the page and result tables, or serve them locally
+audit/            dataset query, audit pipeline, site builder, cutoff comparison
+data/             cached HMDA extract (downloaded on the first run)
+results/          generated artifacts: audit.json, audit.csv, cutoffs.csv,
+                  summary.md and the built page, index.html
+tests/            unittest suite, no network needed
+requirements.txt  numpy, pandas, scikit-learn
+WRITEUP.md        one-page write-up
 ```
 
-## What is in here
+## Quick start
 
-```
-audit/
-  data.py         loads the data, builds the age and sex groups
-  models.py       preprocessing and the two model types
-  metrics.py      group rates, gaps, and the per-group cutoff search
-  run_audit.py    runs 50 random splits and writes results/
-  scoring.py      helpers for the what-if demo
-app.py            Gradio demo
-tests/            checks for the metrics, with numbers worked out by hand
-results/          summary.md, summary.csv, runs.csv, proxy_check.csv, gaps.png
-data/             cached copy of the dataset
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python app.py         # ~80s: audit + comparison, writes results/
+.venv/bin/python app.py serve   # http://127.0.0.1:4173
 ```
 
-## What it measures
+The first build downloads a 224 MB HMDA extract (about 45 MB compressed) and
+caches it in `data/`; later runs are offline.
 
-For each group, on test data the model did not see:
+## Commands
 
-- Approval rate, and the gap between the two groups
-- True positive rate: the share of good borrowers who get approved
-- False positive rate: the share of bad borrowers who get approved
-- Proxy check: how well the columns left in the blind model predict group membership
+| command | what it does |
+|---|---|
+| `python app.py` | audit and comparison, writes all five files in `results/` |
+| `python app.py build` | audit only: `audit.json`, `audit.csv`, `index.html` |
+| `python app.py compare` | cutoff rules only: `cutoffs.csv` |
+| `python app.py serve` | serves `results/` at `http://127.0.0.1:4173` |
 
-Four strategies are compared: approving everyone (the baseline), a model with age and sex, a blind model without them, and the blind model with a separate cutoff per group.
+`--splits` and `--seed` control the resampling (default 50 and 0).
 
 ## Tests
 
+```bash
+.venv/bin/python -m unittest discover -s tests
 ```
-python tests/test_audit.py
-```
-
-The pipeline test uses synthetic data with the same columns as the real set. It checks that the code runs and that the outputs have the right shape. No reported number comes from it.
 
 ## Data
 
-Hofmann, H. (1994). Statlog (German Credit Data). UCI Machine Learning Repository. https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data
+HMDA 2025, Georgia, Maryland, Michigan and Arizona, home-purchase and refinance
+applications marked originated or denied, from the CFPB Data Browser API
+(`audit/dataset.py` holds the exact query). Filings are narrowed to White and
+Black applicants who reported an age, then to a fixed 100,000-application sample
+(seed 0) so 50 splits stay tractable. Only application-time fields are modelled;
+pricing, purchaser, HOEPA and denial reasons are excluded because they are
+reported after the decision.
 
-## Status
+## Deploying
 
-A hackathon prototype on a 1,000-row dataset from 1994. It is not financial advice and no lender should use it.
+`results/index.html` is self-contained — one HTML file with its CSS, SVG and
+JavaScript inline. Upload it as the site root.

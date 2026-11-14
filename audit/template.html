@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loan Fairness Audit</title>
+<style>
+:root{--bg:#eef2f6;--fg:#0e1822;--mut:#566879;--card:transparent;--line:#cbd5df;--acc:#2c5d8a;--bad:#b4472f;--ok:#2f7a68;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c141c;--fg:#e8eef4;--mut:#8fa1b1;--line:#233240;--acc:#79a6d1;--bad:#e07a62;--ok:#5cc2a8}}
+:root[data-theme="dark"]{--bg:#0c141c;--fg:#e8eef4;--mut:#8fa1b1;--line:#233240;--acc:#79a6d1;--bad:#e07a62;--ok:#5cc2a8}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 "Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-weight:300;letter-spacing:-.035em;line-height:1.05;margin:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:9;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:calc(18px + env(safe-area-inset-top,0px)) 28px 18px;font-size:13px;color:#fff;transition:background .3s,color .3s}
+nav.solid{background:var(--bg);color:var(--fg);border-bottom:1px solid var(--line)}
+nav b{font-weight:500}nav .l{display:flex;gap:26px}nav a{color:inherit;text-decoration:none;opacity:.7}nav a:hover,nav a.on{opacity:1}
+#fab{justify-self:end;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}
+#bar{position:absolute;left:0;bottom:-1px;height:1px;background:currentColor;width:0}
+.hero{height:190vh;position:relative}.stick{position:sticky;top:0;height:100vh;overflow:hidden;background:#5d7b97}
+.stick svg{position:absolute;inset:0;width:100%;height:100%;margin:0}
+.hc{position:absolute;left:0;right:0;top:58%;text-align:center;color:#fff;padding:0 24px}
+.hc h1{font-size:clamp(34px,6vw,74px);max-width:15em;margin:0 auto}.hc p{margin:18px 0 0;font-size:14px;color:#ffffffb8}
+.cue{position:absolute;bottom:26px;left:0;right:0;text-align:center;color:#ffffffa0;font-size:12px;letter-spacing:.08em}
+section.s{max-width:1040px;margin:0 auto;padding:120px 28px;display:grid;grid-template-columns:170px 1fr;gap:40px}
+.lab{font-size:13px;color:var(--mut);line-height:1.5}
+h2{font-size:clamp(32px,4.6vw,56px);margin-bottom:.5em}
+p{color:var(--mut);max-width:38em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:30px;margin:34px 0}
+.card{border-top:1px solid var(--line);padding-top:14px}.card h3{font-size:18px;margin-bottom:6px;font-weight:400}.card p{margin:0;font-size:15px}
+.num{font-size:46px;font-weight:300;letter-spacing:-.04em;color:var(--fg);line-height:1}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:30px;margin-top:34px}
+.steps .card::before{counter-increment:s;content:"0" counter(s);display:block;font-size:12px;color:var(--mut);margin-bottom:22px}
+.tl{border-left:1px solid var(--line);margin:30px 0 20px 4px;padding-left:26px}.tl div{position:relative;margin-bottom:24px}
+.tl div::before{content:"";position:absolute;left:-30px;top:9px;width:7px;height:7px;border-radius:50%;background:var(--fg)}
+.tl b{display:block;font-size:13px;font-weight:500;color:var(--mut)}.tl span{color:var(--fg)}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}.rv.in{opacity:1;transform:none}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.seg button{border:1px solid var(--line);background:none;color:var(--fg);border-radius:99px;padding:7px 15px;font:inherit;font-size:14px;cursor:pointer}
+.seg button:hover{border-color:var(--fg)}.seg button.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.panel{border:1px solid var(--line);border-radius:4px;padding:26px;margin-top:20px}.panel h3{font-size:20px;font-weight:400}
+.row{display:grid;grid-template-columns:110px 1fr 56px;gap:12px;align-items:center;margin:12px 0;font-size:14px}
+.track{height:22px;background:var(--line)}.fill{height:100%;background:var(--acc);transition:width .9s cubic-bezier(.2,.8,.2,1)}.fill.b{background:var(--bad)}
+.gap{font-size:30px;font-weight:300;letter-spacing:-.03em;margin:20px 0 2px}
+svg{width:100%;height:auto;display:block;margin-top:8px}.z{stroke:var(--mut);stroke-dasharray:2 4}.wh{stroke:var(--mut);stroke-width:2;opacity:.6}
+.lb{fill:var(--fg);font:12px "Helvetica Neue",Helvetica,Arial,sans-serif}.ax{fill:var(--mut);font:11px "Helvetica Neue",Helvetica,Arial,sans-serif}.d.n{fill:var(--bad)}.d.p{fill:var(--ok)}
+.pc{display:flex;gap:24px;align-items:center;margin-top:16px}.gauge{--p:0;flex:none;width:90px;height:90px;border-radius:50%;background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.gauge i{font:300 22px "Helvetica Neue",Helvetica,Arial,sans-serif;font-style:normal;width:76px;height:76px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+small{color:var(--mut);font-size:13px}footer{padding:40px 28px 90px;color:var(--mut);font-size:13px;max-width:1040px;margin:0 auto;border-top:1px solid var(--line)}
+#ag{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:11;width:min(380px,calc(100vw - 40px));max-height:70vh;display:none;flex-direction:column;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;box-shadow:0 10px 40px #0004;font:14px/1.5 "Helvetica Neue",Helvetica,Arial,sans-serif}
+#ag.open{display:flex}#log{padding:16px;overflow:auto;flex:1}
+.m{margin:0 0 10px;padding:9px 12px;border-radius:4px;white-space:pre-wrap}.u{background:var(--fg);color:var(--bg);margin-left:34px}.a{border:1px solid var(--line);margin-right:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}.chips button{border:1px solid var(--line);background:none;color:var(--fg);border-radius:99px;padding:4px 11px;font-size:12px;cursor:pointer}
+#f{display:flex;border-top:1px solid var(--line)}#q{flex:1;border:0;background:none;color:var(--fg);padding:13px 16px;font-size:14px;outline:none}#f button{border:0;background:none;color:var(--fg);padding:0 18px;cursor:pointer}
+@media(max-width:720px){section.s{grid-template-columns:1fr;gap:14px;padding:80px 24px}nav .l{display:none}nav{grid-template-columns:1fr auto}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}.rv{opacity:1;transform:none}}
+</style></head><body>
+<nav id="nv"><b>loan fairness audit</b><div class="l"><a href="#rules">Rules</a><a href="#data">Data</a><a href="#method">Method</a><a href="#results">Results</a><a href="#limits">Limits</a></div><button id="fab">Ask the audit ↗</button><div id="bar"></div></nav>
+
+<header class="hero" id="top"><div class="stick">
+<svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+<linearGradient id="mt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f7fa"/><stop offset=".45" stop-color="#8e9eb0"/><stop offset="1" stop-color="#dde4ec"/></linearGradient>
+<linearGradient id="hl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16222f"/><stop offset="1" stop-color="#7f98b0"/></linearGradient>
+<linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdbe6" stop-opacity="0"/><stop offset="1" stop-color="#dfe8f0" stop-opacity=".55"/></linearGradient>
+<radialGradient id="vg" cx=".5" cy=".42" r=".75"><stop offset=".5" stop-color="#0b1a28" stop-opacity="0"/><stop offset="1" stop-color="#0b1a28" stop-opacity=".55"/></radialGradient></defs>
+<g id="tun"></g><rect y="560" width="1200" height="240" fill="url(#fl)"/><rect width="1200" height="800" fill="url(#vg)"/>
+<g id="ring" transform="translate(600 330) rotate(-14)"><ellipse cy="150" rx="120" ry="16" fill="#0b1a28" opacity=".25"/><ellipse rx="122" ry="130" fill="url(#mt)"/><ellipse rx="88" ry="96" fill="url(#hl)"/><path d="M-96-40A112 118 0 0 1 20-118" fill="none" stroke="#fff" stroke-width="3" opacity=".7"/></g></svg>
+<div class="hc"><h1>Does a loan model treat everyone the same?</h1><p id="badge"></p></div><div class="cue">Scroll</div></div></header>
+
+<section class="s rv" id="rules"><div class="lab">(01)<br>Rules</div><div>
+<h2>The rule changed in July</h2>
+<p>A fair-lending audit measures outcomes. Whether a gap creates legal risk depends on the rule, and one US rule changed in 2026.</p>
+<div class="tl">
+<div><b>April 22, 2026</b><span>The CFPB issues a final rule amending Regulation B, which implements ECOA.</span></div>
+<div><b>July 21, 2026</b><span>The rule takes effect. It removes the “effects test” and states that ECOA does not authorize disparate-impact liability.</span></div>
+<div><b>Unchanged</b><span>Disparate treatment and the intentional use of proxies for protected traits stay prohibited, according to law-firm summaries. The Fair Housing Act and state laws did not change, and a court challenge was filed.</span></div>
+</div>
+<small>Sources: Federal Register 2026-07804; summaries from Cooley, Venable and Husch Blackwell. A student project, not legal advice.</small>
+<p>We test for proxies as well as gaps. A model with the protected columns removed can still rebuild them from other columns.</p>
+</div></section>
+
+<section class="s rv" id="data"><div class="lab">(02)<br>Data</div><div>
+<h2>Who is in the sample</h2><div class="grid" id="stats"></div><p id="dnote"></p></div></section>
+
+<section class="s rv" id="method"><div class="lab">(03)<br>Method</div><div>
+<h2>How the audit works</h2>
+<div class="steps">
+<div class="card"><h3>Prepare</h3><p>Filter to comparable applications and label the groups.</p></div>
+<div class="card"><h3>Train</h3><p>Fit a full model, a blind model without protected columns, and a blind model with a cutoff for each group.</p></div>
+<div class="card"><h3>Test</h3><p>Score held-out applications over many random splits.</p></div>
+<div class="card"><h3>Probe</h3><p>Check whether the remaining columns can predict the protected trait.</p></div>
+</div></div></section>
+
+<section class="s rv" id="results"><div class="lab">(04)<br>Results</div><div>
+<h2>Compare the strategies</h2>
+<p>Choose a trait and a strategy. Bars show the share approved in each group on test data.</p>
+<div class="seg" id="sa"></div><div class="seg" id="ss"></div>
+<div class="panel"><div id="bars"></div><div class="gap" id="gap"></div><p id="gnote"></p></div>
+<div class="panel"><h3>Approval gap by strategy</h3><div id="chart"></div><small>Dot: average gap. Line: 2.5th to 97.5th percentile across splits. Left of zero means the first group is approved less often.</small></div>
+<div class="panel"><h3>Proxy check</h3><div class="pc"><div class="gauge" id="gauge"><i id="gv"></i></div><p id="proxy"></p></div></div>
+</div></section>
+
+<section class="s rv" id="limits"><div class="lab">(05)<br>Limits</div><div>
+<h2>What the numbers do not show</h2><p id="lim"></p></div></section>
+<footer>Hackathon prototype. Not financial or legal advice.</footer>
+
+<div id="ag"><div id="log"></div><div class="chips" id="chips"></div>
+<form id="f"><input id="q" placeholder="Ask about the results…" autocomplete="off"><button>Send</button></form></div>
+
+<script>
+// The audit pipeline rewrites this block: python -m audit.build_site
+const DATA=/*DATA*/{}/*END*/;
+const NOTES={full:"Full model sees the protected traits. Blind model has them removed. Group cutoffs set a separate approval threshold per group so every group is approved at the same overall rate.",
+rule:"CFPB final rule effective July 21, 2026 removes disparate impact from Regulation B. Disparate treatment and intentional proxy use remain prohibited. The Fair Housing Act and state laws are unchanged. Not legal advice.",
+limits:"Ranges across splits understate uncertainty. Small groups make group-cutoff results unstable. Cutoffs use the protected trait at decision time."};
+const $=s=>document.querySelector(s),K=Object.keys;let A=K(DATA.groups)[0],S="Full model";
+const mk=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+$("#badge").textContent=DATA.dataset+" · label: "+DATA.label;
+$("#lim").textContent=NOTES.limits+" "+(DATA.caveat||"")+" This is a prototype, not financial or legal advice.";
+$("#dnote").textContent="Each result is the average over "+DATA.splits+" random 60/20/20 splits, scored on the held-out test part. Model: "+DATA.model+".";
+const cards=[[DATA.rows.toLocaleString(),"applications"],[DATA.base+"%","approved in the data"]];
+K(DATA.groups).forEach(a=>cards.push([DATA.groups[a].n[0].toLocaleString(),DATA.groups[a].other+" applicants"]));
+cards.forEach(([n,t])=>{const d=mk("div","card"),e=mk("div","num",n);e.dataset.n=parseFloat(String(n).replace(/,/g,""));e.dataset.s=String(n).endsWith("%")?"%":"";d.append(e,mk("p","",t));$("#stats").append(d)});
+function count(e){const to=+e.dataset.n,s=e.dataset.s,t0=performance.now(),f=t=>{const k=Math.min(1,(t-t0)/900),v=to*(1-Math.pow(1-k,3));e.textContent=(s?v.toFixed(1):Math.round(v).toLocaleString())+s;if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
+const sv=(t,a,x)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e};
+function chart(){const el=$("#chart");el.innerHTML="";const R=DATA.res[A],ks=K(R).filter(k=>k!=="approve everyone"&&R[k].length>4&&R[k][3]!=null);if(!ks.length)return;
+const M=Math.max(10,Math.ceil(Math.max(...ks.flatMap(k=>[Math.abs(R[k][3]),Math.abs(R[k][4])]))/5)*5),W=640,H=ks.length*46+40,L=170,E=W-24,x=v=>L+(v+M)/(2*M)*(E-L),s=sv("svg",{viewBox:"0 0 "+W+" "+H,role:"img"});
+s.append(sv("line",{x1:x(0),x2:x(0),y1:6,y2:H-28,class:"z"}));
+ks.forEach((k,i)=>{const r=R[k],y=26+i*46,g=r[0]-r[1];s.append(sv("text",{x:0,y:y+4,class:"lb"},k),sv("line",{x1:x(r[3]),x2:x(r[4]),y1:y,y2:y,class:"wh"}),sv("circle",{cx:x(g),cy:y,r:7,class:g<0?"d n":"d p"}))});
+[-M,0,M].forEach(v=>s.append(sv("text",{x:x(v),y:H-8,class:"ax","text-anchor":"middle"},(v>0?"+":"")+v)));el.append(s)}
+function seg(el,items,cur,fn){el.innerHTML="";items.forEach(i=>{const b=mk("button","",i);if(i===cur)b.className="on";b.onclick=()=>{fn(i);draw()};el.append(b)})}
+function draw(){if(!DATA.res[A][S])S=K(DATA.res[A])[1]||K(DATA.res[A])[0];const g=DATA.groups[A],r=DATA.res[A][S];
+seg($("#sa"),K(DATA.groups),A,v=>A=v);seg($("#ss"),K(DATA.res[A]),S,v=>S=v);
+$("#bars").innerHTML="";[[g.other,r[0],"b"],[g.ref,r[1],""]].forEach(([n,v,c])=>{const w=mk("div","row");const t=mk("div","track");const f=mk("div","fill "+c);f.style.width="0";t.append(f);w.append(mk("span","",n),t,mk("span","",v.toFixed(1)+"%"));$("#bars").append(w);requestAnimationFrame(()=>f.style.width=v+"%")});
+const gap=r[0]-r[1];$("#gap").textContent="Approval gap: "+(gap>0?"+":"")+gap.toFixed(1)+" points";
+$("#gnote").textContent=(r[2]==null?"This row is the label in the data, so it has no accuracy. ":"Accuracy: "+r[2].toFixed(1)+"%. ")+"A negative gap means the "+g.other+" group is approved less often.";
+chart();$("#gauge").style.setProperty("--p",Math.max(0,(DATA.proxy[A]-.5)/.5*100));$("#gv").textContent=DATA.proxy[A].toFixed(2);$("#proxy").textContent="A model using only the remaining columns predicts "+g.other+" status with AUC "+DATA.proxy[A].toFixed(2)+" (0.5 is chance). Higher means the columns act as a stand-in for the trait.";}
+draw();
+(function(){const g=$("#tun");for(let i=0;i<13;i++){const k=Math.pow(.8,i),w=1900*k,hh=1300*k,t=i/12,c=Math.round(205-t*125),r=sv("rect",{x:600-w/2,y:360-hh/2,width:w,height:hh,rx:w*.42,fill:"rgb("+c+","+(c+14)+","+(c+28)+")",stroke:"#ffffff",
+"stroke-opacity":.16,"stroke-width":2});g.append(r)}})();
+const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add("in");if(x.target.id==="data")document.querySelectorAll(".num[data-n]").forEach(count)}}),{threshold:.15});
+document.querySelectorAll(".rv").forEach(s=>io.observe(s));
+const links=[...document.querySelectorAll("nav a")],secs=links.map(a=>$(a.hash));
+const calm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+addEventListener("scroll",()=>{const h=document.documentElement,hv=$(".hero").offsetHeight-innerHeight,p=Math.min(1,scrollY/hv);$("#nv").classList.toggle("solid",scrollY>hv-60);
+if(!calm){$("#tun").setAttribute("transform","translate(600 360) scale("+(1+p*2.6)+") translate(-600 -360)");$("#ring").style.transform="translate(600px,"+(330+p*70)+"px) rotate("+(-14+p*30)+"deg) scale("+(1+p*.9)+")";$(".hc").style.opacity=Math.max(0,1-p*1.7);$(".cue").style.opacity=Math.max(0,1-p*4)}$("#bar").style.width=(100*scrollY/(h.scrollHeight-innerHeight))+"%";
+let k=-1;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<innerHeight*.4)k=i});links.forEach((a,i)=>a.classList.toggle("on",i===k))},{passive:true});
+let sample=null;try{window.claude&&claude.use("sample").then(s=>sample=s).catch(()=>{})}catch(e){}
+const ctx=()=>"DATA: "+JSON.stringify(DATA)+"\nNOTES: "+JSON.stringify(NOTES);
+function say(t,c){const m=mk("div","m "+c,t);$("#log").append(m);$("#log").scrollTop=1e9;return m}
+function local(q){q=q.toLowerCase();if(/rule|law|reg|ecoa|legal/.test(q))return NOTES.rule;
+if(/limit|caveat|weak/.test(q))return NOTES.limits+" "+(DATA.caveat||"");
+if(/proxy|auc/.test(q))return K(DATA.proxy).map(a=>DATA.groups[a].other+": AUC "+DATA.proxy[a]).join("; ")+". These use only the columns left after removing protected traits. 0.5 is chance, so higher means those columns stand in for the trait.";
+if(/cutoff|fix|mitigat|blind/.test(q))return NOTES.full;
+const d=x=>(x[0]-x[1]).toFixed(1);
+return K(DATA.res).map(a=>{const r=DATA.res[a];return a+" ("+DATA.groups[a].other+" vs "+DATA.groups[a].ref+"): "+["observed approvals","Full model","Blind model","Blind + group cutoffs"].filter(k=>r[k]).map(k=>k+" gap "+d(r[k])).join(", ")}).join(". ")+"."}
+async function ask(q){say(q,"u");const m=say("Thinking…","a");
+if(sample){try{const r=await sample([{role:"user",content:"You summarize a loan-model fairness audit for a hackathon judge. Use only the data and notes below. Quote numbers, keep it under 110 words, plain text, no legal advice.\n\n"+ctx()+"\n\nQuestion: "+q}],{cache:false,onText:({text})=>m.textContent=text});m.textContent=r.text;return}catch(e){}}
+m.textContent=local(q)}
+$("#fab").onclick=()=>{$("#ag").classList.toggle("open");if(!$("#log").children.length)say("Hi. I summarize this audit. Pick a question or type your own.","a")};
+["Summarize the results","What does the proxy check mean?","What changed in the rules?","What are the limits?"].forEach(t=>{const b=mk("button","",t);b.type="button";b.onclick=()=>ask(t);$("#chips").append(b)});
+$("#f").onsubmit=e=>{e.preventDefault();const v=$("#q").value.trim();if(v){$("#q").value="";ask(v)}};
+</script></body></html>
