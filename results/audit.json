@@ -1,0 +1,108 @@
+{
+  "dataset": "HMDA 2025, four states, purchase and refinance",
+  "source": "https://ffiec.cfpb.gov/data-publication/",
+  "label": "approved (originated)",
+  "caveat": "Four states, two loan purposes, self-reported demographics and no credit score: a public sample, not a lender's model.",
+  "rows": 100000,
+  "base": 84.5,
+  "model": "logreg",
+  "splits": 50,
+  "groups": {
+    "age": {
+      "other": "under 25",
+      "ref": "25 and over",
+      "n": [
+        5636,
+        94364
+      ]
+    },
+    "race": {
+      "other": "Black",
+      "ref": "White",
+      "n": [
+        17772,
+        82228
+      ]
+    }
+  },
+  "res": {
+    "age": {
+      "approve everyone": [
+        100.0,
+        100.0,
+        84.5,
+        0.0,
+        0.0
+      ],
+      "observed in data": [
+        85.1,
+        84.6,
+        null,
+        -0.9,
+        2.5
+      ],
+      "full model": [
+        85.3,
+        84.5,
+        88.0,
+        -0.9,
+        2.1
+      ],
+      "blind model": [
+        84.4,
+        84.5,
+        87.8,
+        -2.0,
+        1.2
+      ],
+      "blind + group cutoffs": [
+        84.6,
+        84.5,
+        87.8,
+        -3.5,
+        2.4
+      ]
+    },
+    "race": {
+      "approve everyone": [
+        100.0,
+        100.0,
+        84.5,
+        0.0,
+        0.0
+      ],
+      "observed in data": [
+        74.6,
+        86.8,
+        null,
+        -13.3,
+        -11.1
+      ],
+      "full model": [
+        68.3,
+        88.0,
+        88.0,
+        -21.4,
+        -17.7
+      ],
+      "blind model": [
+        75.3,
+        86.5,
+        87.8,
+        -12.8,
+        -9.8
+      ],
+      "blind + group cutoffs": [
+        84.6,
+        84.5,
+        87.4,
+        -1.4,
+        1.5
+      ]
+    }
+  },
+  "proxy": {
+    "age": 0.76,
+    "race": 0.84
+  }
+}
