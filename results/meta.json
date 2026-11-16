@@ -1,0 +1,32 @@
+{
+  "dataset": "German Credit (1994), demo data only",
+  "source": "https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data",
+  "label": "good credit risk",
+  "caveat": "A 1994 German dataset says little about any lender today.",
+  "cost_fp": 5,
+  "hero": "Would this loan model treat you the same at 22 and at 42?",
+  "p_label": "likely to repay",
+  "fail_note": "Two applicants with the same recorded details can have different outcomes, and the data holds no repayment history after approval.",
+  "rows": 1000,
+  "base": 70.0,
+  "model": "logreg",
+  "splits": 50,
+  "groups": {
+    "age": {
+      "other": "under 25",
+      "ref": "25 and over",
+      "n": [
+        149,
+        851
+      ]
+    },
+    "sex": {
+      "other": "female",
+      "ref": "male",
+      "n": [
+        310,
+        690
+      ]
+    }
+  }
+}

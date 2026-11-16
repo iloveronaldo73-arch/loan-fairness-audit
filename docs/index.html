@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loan Fairness Audit</title>
+<style>
+:root{--bg:#eef2f6;--fg:#0e1822;--mut:#566879;--line:#cbd5df;--tint:#e1e9f1;--acc:#2c5d8a;--bad:#b4472f;--ok:#2f7a68;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c141c;--fg:#e8eef4;--mut:#8fa1b1;--line:#233240;--tint:#101b26;--acc:#79a6d1;--bad:#e07a62;--ok:#5cc2a8}}
+:root[data-theme="dark"]{--bg:#0c141c;--fg:#e8eef4;--mut:#8fa1b1;--line:#233240;--tint:#101b26;--acc:#79a6d1;--bad:#e07a62;--ok:#5cc2a8}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.6 "Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-weight:300;letter-spacing:-.035em;line-height:1.05;margin:0}
+.band{background:var(--bg);color:var(--fg)}.band.t{background:var(--tint)}
+.band.deep{--bg:#0f1b27;--fg:#e8eef4;--mut:#93a7ba;--line:#26384a;--tint:#14232f;--acc:#8db4dc;--bad:#ef8a72;--ok:#62cbb0;background:linear-gradient(180deg,#0f1b27,#14283a)}
+nav{position:fixed;top:0;left:0;right:0;z-index:9;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:calc(18px + env(safe-area-inset-top,0px)) 28px 18px;font-size:13px;color:#fff;transition:background .3s,color .3s}
+nav.solid{background:var(--bg);color:var(--fg);border-bottom:1px solid var(--line)}
+nav b{font-weight:500}nav .l{display:flex;gap:26px}nav a{color:inherit;text-decoration:none;opacity:.7}nav a:hover,nav a.on{opacity:1}
+#fab{justify-self:end;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}#bar{position:absolute;left:0;bottom:-1px;height:1px;background:currentColor;width:0}
+.hero{height:190vh;position:relative}.stick{position:sticky;top:0;height:100vh;overflow:hidden;background:#5d7b97}
+.stick svg{position:absolute;inset:0;width:100%;height:100%;margin:0}
+.hc{position:absolute;left:0;right:0;top:58%;text-align:center;color:#fff;padding:0 24px}.hc h1{font-size:clamp(34px,6vw,74px);max-width:15em;margin:0 auto}.hc p{margin:18px 0 0;font-size:14px;color:#ffffffb8}
+.cue{position:absolute;bottom:26px;left:0;right:0;text-align:center;color:#ffffffa0;font-size:12px;letter-spacing:.08em}
+section.s{max-width:1040px;margin:0 auto;padding:120px 28px;display:grid;grid-template-columns:170px 1fr;gap:40px}
+.lab{font-size:13px;color:var(--mut);line-height:1.5}.lab b{display:block;font-size:64px;font-weight:200;letter-spacing:-.05em;color:var(--acc);line-height:1;margin-bottom:8px}
+h2{font-size:clamp(32px,4.6vw,56px);margin-bottom:.5em}p{color:var(--mut);max-width:38em}
+.trio{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;margin-top:34px}
+.card{border-top:2px solid var(--fg);padding-top:14px}.card h3{font-size:18px;margin-bottom:6px;font-weight:400}.card p{margin:0;font-size:15px}.card .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+.n2{font-size:40px;font-weight:200;letter-spacing:-.04em;color:var(--acc);line-height:1;margin-bottom:10px}
+.hl{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:30px;margin:34px 0 26px}.hl>div{border-top:2px solid var(--fg);padding-top:14px}
+.hl .n{font-size:clamp(46px,7vw,80px);font-weight:200;letter-spacing:-.05em;line-height:1}.hl .c{font-size:13px;color:var(--mut);margin-top:10px;max-width:22em}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}.rv.in{opacity:1;transform:none}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.seg button{border:1px solid var(--line);background:none;color:var(--fg);border-radius:99px;padding:7px 15px;font:inherit;font-size:14px;cursor:pointer}
+.seg button:hover{border-color:var(--fg)}.seg button.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.panel{border:1px solid var(--line);border-radius:4px;padding:26px;margin-top:20px;background:var(--bg)}.band.t .panel{background:var(--bg)}.panel h3{font-size:20px;font-weight:400;margin-bottom:8px}
+.fld{display:grid;gap:6px;font-size:14px;margin:14px 0}.fld span{color:var(--mut)}.fld b{color:var(--fg);font-weight:500}
+input[type=range]{width:100%;accent-color:var(--acc)}select{font:inherit;font-size:14px;padding:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:4px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px;margin-top:26px}.duo{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-bottom:28px}
+.big{font-size:56px;font-weight:200;letter-spacing:-.05em;line-height:1}.dec{font-size:13px;color:var(--mut);margin-top:6px}
+.meter{height:8px;background:var(--line);position:relative;border-radius:99px;margin-top:14px}.meter i{display:block;height:100%;border-radius:99px;background:var(--acc);transition:width .4s}.meter u{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--fg)}
+table{width:100%;border-collapse:collapse;font-size:14px}th{font-weight:500;color:var(--mut);text-align:left}td,th{padding:10px 12px 10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.bar{background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 26%,transparent) var(--w),transparent var(--w))}.ts{overflow-x:auto}
+svg{width:100%;height:auto;display:block;margin-top:8px}.z{stroke:var(--mut);stroke-dasharray:2 4}.wh{stroke:var(--mut);stroke-width:2;opacity:.6}
+.lb{fill:var(--fg);font:12px "Helvetica Neue",Helvetica,Arial,sans-serif}.ax{fill:var(--mut);font:11px "Helvetica Neue",Helvetica,Arial,sans-serif}.d.n{fill:var(--bad)}.d.p{fill:var(--ok)}
+.dv{display:grid;grid-template-columns:190px 1fr 54px;gap:14px;align-items:center;margin:16px 0}.dv small{display:block}.dt{position:relative;height:14px;background:var(--line)}.dt::after{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--mut)}
+.db{position:absolute;top:0;bottom:0}.db.n{right:50%;background:var(--bad)}.db.p{left:50%;background:var(--ok)}
+.pc{display:flex;gap:24px;align-items:center;margin:12px 0 16px}.gauge{--p:0;flex:none;width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center}
+.gauge i{font:200 24px "Helvetica Neue",Helvetica,Arial,sans-serif;font-style:normal;width:80px;height:80px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+.chips2{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-size:13px}.chip b{font-weight:500;color:var(--acc)}
+.mcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin:26px 0}.mc{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:22px}.mc h3{font-size:16px;font-weight:500;margin:16px 0 6px}.mc p{margin:0;font-size:14px}
+.addg{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px;margin:30px 0}
+.tl{border-left:1px solid var(--line);margin:34px 0 20px 4px;padding-left:26px}.tl div{position:relative;margin-bottom:24px}.tl div::before{content:"";position:absolute;left:-30px;top:9px;width:7px;height:7px;border-radius:50%;background:var(--acc)}
+.tl b{display:block;font-size:13px;font-weight:500;color:var(--mut)}.tl span{color:var(--fg)}small{color:var(--mut);font-size:13px}
+footer{padding:70px 28px 100px}footer div{max-width:1040px;margin:0 auto;color:var(--mut);font-size:13px;max-width:44em}footer h2{max-width:1040px;margin:0 auto 20px;font-size:clamp(28px,4vw,44px)}
+#ag{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:11;width:min(390px,calc(100vw - 40px));max-height:72vh;display:none;flex-direction:column;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;box-shadow:0 10px 40px #0005;font:14px/1.5 "Helvetica Neue",Helvetica,Arial,sans-serif}
+#ag.open{display:flex}#log{padding:16px;overflow:auto;flex:1}.m{margin:0 0 10px;padding:9px 12px;border-radius:4px;white-space:pre-wrap}.u{background:var(--fg);color:var(--bg);margin-left:34px}.a{border:1px solid var(--line);margin-right:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}.chips button{border:1px solid var(--line);background:none;color:var(--fg);border-radius:99px;padding:4px 11px;font-size:12px;cursor:pointer}
+#mode{padding:8px 16px;font-size:12px;color:var(--mut);border-top:1px solid var(--line)}#mode a{color:var(--fg);cursor:pointer;text-decoration:underline}#kf{display:none;border-top:1px solid var(--line)}#kf.on{display:flex}#kq{flex:1;border:0;background:none;color:var(--fg);padding:11px 16px;font-size:13px;outline:none}#kf button,#f button{border:0;background:none;color:var(--fg);padding:0 16px;cursor:pointer}
+#f{display:flex;border-top:1px solid var(--line)}#q{flex:1;border:0;background:none;color:var(--fg);padding:13px 16px;font-size:14px;outline:none}
+@media(max-width:760px){section.s{grid-template-columns:1fr;gap:14px;padding:80px 24px}.two{grid-template-columns:1fr}nav .l{display:none}nav{grid-template-columns:1fr auto}.dv{grid-template-columns:1fr 54px}.dv .dt{grid-column:1/-1;order:3}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}.rv{opacity:1;transform:none}}
+.fld input[type=text],.fld input[type=tel],.fld input[type=number]{font:inherit;font-size:14px;padding:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:4px;width:100%}
+.hb{display:grid;grid-template-columns:190px 1fr 120px;gap:14px;align-items:center;margin:12px 0;font-size:14px}.hb .tr{height:18px;background:var(--line)}.hb i{display:block;height:100%;background:var(--acc)}.hb b{font-weight:500;text-align:right}
+.note{font-size:13px;color:var(--mut);max-width:34em}.ev{font-size:clamp(34px,5vw,54px);font-weight:200;letter-spacing:-.04em;line-height:1.05;margin-bottom:6px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 18px;font-size:14px;margin-top:18px}.kv span{color:var(--mut)}.kv b{font-weight:500;text-align:right}
+.flag{border-left:3px solid var(--bad);padding-left:14px;margin-top:16px;font-size:14px}.team{font-size:15px;color:var(--fg);margin:0 0 18px}
+@media(max-width:760px){.hb{grid-template-columns:1fr 100px}.hb .tr{grid-column:1/-1;order:3}}
+</style></head><body>
+<nav id="nv"><b>loan fairness audit</b><div class="l"><a href="#who">Who</a><a href="#data">Data</a><a href="#check">Check</a><a href="#try">Test</a><a href="#results">Results</a><a href="#why">Why</a><a href="#fails">Fails</a><a href="#added">Added</a></div><button id="fab">Ask the audit ↗</button><div id="bar"></div></nav>
+<header class="hero" id="top"><div class="stick">
+<svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+<linearGradient id="mt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4f7fa"/><stop offset=".45" stop-color="#8e9eb0"/><stop offset="1" stop-color="#dde4ec"/></linearGradient>
+<linearGradient id="hole" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16222f"/><stop offset="1" stop-color="#7f98b0"/></linearGradient>
+<linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdbe6" stop-opacity="0"/><stop offset="1" stop-color="#dfe8f0" stop-opacity=".55"/></linearGradient>
+<radialGradient id="vg" cx=".5" cy=".42" r=".75"><stop offset=".5" stop-color="#0b1a28" stop-opacity="0"/><stop offset="1" stop-color="#0b1a28" stop-opacity=".55"/></radialGradient></defs>
+<g id="tun"></g><rect y="560" width="1200" height="240" fill="url(#fl)"/><rect width="1200" height="800" fill="url(#vg)"/>
+<g id="ring" transform="translate(600 330) rotate(-14)"><ellipse cy="150" rx="120" ry="16" fill="#0b1a28" opacity=".25"/><ellipse rx="122" ry="130" fill="url(#mt)"/><ellipse rx="88" ry="96" fill="url(#hole)"/><path d="M-96-40A112 118 0 0 1 20-118" fill="none" stroke="#fff" stroke-width="3" opacity=".7"/></g></svg>
+<div class="hc"><h1>Does a loan model treat everyone the same?</h1><p id="badge"></p></div><div class="cue">Scroll</div></div></header>
+<div class="band"><section class="s rv" id="who"><div class="lab"><b>01</b>Who</div><div>
+<h2>A credit officer, and the reviewer next door</h2>
+<p>A statistical model helps decide who gets a loan. Someone has to show it does not treat applicants worse because of protected traits such as age and sex.</p>
+<div class="trio"><div class="card"><div class="k">User</div><h3>A credit officer at a small lender</h3><p>Reviews applications and has to explain each decision.</p></div>
+<div class="card"><div class="k">Moment</div><h3>Before approving a loan</h3><p>Checks the model’s estimate, then hands the file to a compliance reviewer.</p></div>
+<div class="card"><div class="k">In and out</div><h3>Applicant details in, a verdict out</h3><p>An approval estimate for the applicant, and a report on gaps between groups.</p></div></div>
+</div></section></div>
+
+<div class="band t"><section class="s rv" id="data"><div class="lab"><b>02</b>Data</div><div>
+<h2>The lending records behind the tool</h2>
+<p>The Home Mortgage Disclosure Act (HMDA) requires lenders to report loan-level records. This is the summary of originated loans in the FFIEC Data Browser, by loan purpose.</p>
+<div class="hl" id="hmhl"></div><div class="panel" id="hmb"></div>
+<p class="note">Source: FFIEC HMDA Data Browser summary of originated loans, as exported by the team. The fairness audit below runs on the German Credit sample. The HMDA records themselves have not been audited yet.</p>
+</div></section></div>
+
+<div class="band"><section class="s rv" id="check"><div class="lab"><b>03</b>Check</div><div>
+<h2>How much could this applicant borrow?</h2>
+<p>Enter an applicant and a loan. The tool estimates the largest loan the income can carry, and looks up the credit file.</p>
+<div class="two"><form id="cform" onsubmit="return false">
+<label class="fld"><span>Name</span><input type="text" id="nm" placeholder="Made-up name" autocomplete="off"></label>
+<label class="fld"><span>Address</span><input type="text" id="ad" placeholder="Made-up address" autocomplete="off"></label>
+<label class="fld"><span>Telephone number</span><input type="tel" id="ph" placeholder="Made-up number" autocomplete="off"></label>
+<label class="fld"><span>Monthly income ($)</span><input type="number" id="inc" value="6000" min="0" step="100"></label>
+<label class="fld"><span>Monthly savings ($)</span><input type="number" id="sav" value="800" min="0" step="50"></label>
+<label class="fld"><span>Loan tenure <b id="tenv"></b></span><input type="range" id="ten" min="12" max="360" step="12" value="360"></label>
+<label class="fld"><span>Purpose</span><select id="pur"></select></label>
+<label class="fld"><span>Loan amount requested ($)</span><input type="number" id="amt" value="300000" min="0" step="5000"></label>
+<label class="fld"><span>Credit history (simulated lookup)</span><select id="hist"></select></label>
+<label class="fld"><span>Share of income for the payment <b id="shrv"></b></span><input type="range" id="shr" min="20" max="50" step="1" value="35"></label>
+<label class="fld"><span>Interest rate, yearly (%)</span><input type="number" id="rate" value="6.5" min="0" max="20" step="0.1"></label>
+<p class="note">Demo only. Use made-up details. Name, address and telephone are not used by any model and never leave your browser. The share of income and the interest rate are assumptions you can change, not rules.</p>
+</form><div><div class="ev" id="ev"></div><div class="dec" id="evd"></div><div class="kv" id="kv"></div><div class="flag" id="flag"></div>
+<p class="note" style="margin-top:18px">In a real deployment the credit history would come from a credit bureau, fetched by a backend with the applicant’s consent. This demo has no bureau access, so you choose a synthetic profile. Years of credit history, open credit lines and credit utilization are not inputs.</p></div></div>
+</div></section></div>
+
+<div class="band t"><section class="s rv" id="try"><div class="lab"><b>04</b>Test</div><div>
+<h2>Fairness test: change one trait</h2>
+<p>The full model sees the protected traits. The blind model does not. Change one detail and watch what moves.</p>
+<div class="two"><div id="form"></div><div><div class="duo"><div id="df"></div><div id="db"></div></div><div class="ts" id="cf"></div></div></div>
+</div></section></div>
+
+<div class="band deep"><section class="s rv" id="results"><div class="lab"><b>05</b>Results</div><div>
+<h2>Does it beat the simple rule?</h2>
+<p id="rint"></p><div class="seg" id="sa"></div><div class="hl" id="hl"></div>
+<div class="panel ts" id="tbl"></div>
+<div class="panel"><h3>Approval gap by strategy</h3><div id="chart"></div><small>Dot: average gap. Line: 2.5th to 97.5th percentile across splits. Left of zero means the first group is approved less often.</small></div>
+</div></section></div>
+
+<div class="band"><section class="s rv" id="why"><div class="lab"><b>06</b>Why</div><div>
+<h2>What drives the gap</h2>
+<div class="panel"><h3>Features behind the gap</h3><p id="dnote"></p><div id="drv"></div></div>
+<div class="panel"><h3>Stand-ins for the protected trait</h3><div class="pc"><div class="gauge" id="gauge"><i id="gv"></i></div><p id="proxy"></p></div><div class="chips2" id="sti"></div></div>
+</div></section></div>
+
+<div class="band t"><section class="s rv" id="fails"><div class="lab"><b>07</b>Failures</div><div>
+<h2>Where it fails</h2><p>The most confident wrong calls of the blind model on one test split.</p>
+<div class="mcs" id="mis"></div><p id="lim"></p>
+</div></section></div>
+
+<div class="band deep"><section class="s rv" id="added"><div class="lab"><b>08</b>Added</div><div>
+<h2>What we added to the brief</h2><div class="addg" id="add"></div>
+<div class="tl">
+<div><b>July 21, 2026</b><span>A CFPB final rule amending Regulation B takes effect. It removes the “effects test” and states that ECOA does not authorize disparate-impact liability.</span></div>
+<div><b>Unchanged</b><span>Disparate treatment and the intentional use of proxies stay prohibited, according to law-firm summaries. The Fair Housing Act and state laws did not change, and a court challenge was filed.</span></div></div>
+<small>Sources: Federal Register 2026-07804; summaries from Cooley, Venable and Husch Blackwell. Not legal advice.</small>
+</div></section></div>
+<footer class="band deep"><h2>Prototype, not advice</h2><div class="team">Built by Ansh Prasad, Karthik Sivasankar and Saharsh Nimesh Kedia.</div><div id="foot"></div></footer>
+
+<div id="ag"><div id="log"></div><div class="chips" id="chips"></div><div id="mode"></div>
+<form id="kf"><input id="kq" type="password" placeholder="Gemini API key (kept in this tab only)" autocomplete="off"><button>Use</button></form>
+<form id="f"><input id="q" placeholder="Ask about the results…" autocomplete="off"><button>Send</button></form></div>
+
+<script>
+const AGENT_URL=""; // optional: address of the worker in worker/agent.js, for live generative answers
+const DATA=/*DATA*/{"dataset": "German Credit (1994), demo data only", "source": "https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data", "label": "good credit risk", "caveat": "A 1994 German dataset says little about any lender today.", "cost_fp": 5, "hero": "Would this loan model treat you the same at 22 and at 42?", "p_label": "likely to repay", "fail_note": "Two applicants with the same recorded details can have different outcomes, and the data holds no repayment history after approval.", "rows": 1000, "base": 70.0, "model": "logreg", "splits": 50, "groups": {"age": {"other": "under 25", "ref": "25 and over", "n": [149, 851]}, "sex": {"other": "female", "ref": "male", "n": [310, 690]}}, "res": {"age": {"approve everyone": [100.0, 100.0, 70.0, 0.0, 0.0, 1.5], "full model": [63.9, 78.0, 74.7, -27.0, -1.1, 0.878], "blind model": [67.6, 77.8, 74.6, -22.5, 3.0, 0.889], "blind + group cutoffs": [76.1, 75.8, 74.2, -26.7, 23.5, 0.891], "blind + cost cutoff": [26.9, 43.2, 62.5, -32.2, -0.3, 0.541]}, "sex": {"approve everyone": [100.0, 100.0, 70.0, 0.0, 0.0, 1.5], "full model": [68.5, 79.0, 74.7, -22.6, 3.2, 0.878], "blind model": [73.7, 77.4, 74.6, -13.2, 9.9, 0.889], "blind + group cutoffs": [75.3, 76.5, 74.3, -15.3, 13.5, 0.892], "blind + cost cutoff": [39.4, 41.3, 62.5, -11.4, 6.8, 0.541]}}, "proxy": {"age": 0.79, "sex": 0.71}, "extra": {"model": {"full": {"b0": 1.5115874066399009, "num": {"duration": [20.903, 12.05278353742406, -0.3333569504029897], "credit_amount": [3271.258, 2821.325154503819, -0.33994707995871026], "installment_commitment": [2.973, 1.1181551770662197, -0.35605100002477813], "residence_since": [2.845, 1.103165898675267, -0.006068541446031019], "age": [35.546, 11.36977941738536, 0.16116687299723467], "existing_credits": [1.407, 0.5773655687690415, -0.1464179055312681], "num_dependents": [1.155, 0.3619046835839497, -0.0880504307048727]}, "cat": {"checking_status": {"0<=X<200": -0.3653533578023211, "<0": -0.7345112938919834, ">=200": 0.1918115004542331, "no checking": 0.9207434657454607}, "credit_history": {"all paid": -0.601647044152581, "critical/other existing credit": 0.8304871572987149, "delayed previously": 0.2513826131931704, "existing paid": 0.018380857167105965, "no credits/all paid": -0.48591326900101545}, "purpose": {"business": -0.03439046276877199, "domestic appliance": -0.15329292594025057, "education": -0.6943367873717341, "furniture/equipment": 0.0251755699845104, "new car": -0.7186758542970774, "other": 0.4316975046114776, "radio/tv": 0.1439067484705018, "repairs": -0.4128774620676131, "retraining": 0.6050685075467143, "used car": 0.8204154763376283}, "savings_status": {"100<=X<500": -0.22629301255096998, "500<=X<1000": -0.15040520195585375, "<100": -0.5637987299099166, ">=1000": 0.5969853600514248, "no known savings": 0.3562018988707034}, "employment": {"1<=X<4": -0.0943424363968654, "4<=X<7": 0.5225274515292843, "<1": -0.21429410824631717, ">=7": 0.014205207020126055, "unemployed": -0.21540579940084184}, "personal_status": {"female div/dep/mar": -0.10151318626889837, "male div/sep": -0.32954045980876057, "male mar/wid": 0.025343102717329244, "male single": 0.41840085786572845}, "other_parties": {"co applicant": -0.49539674117565663, "guarantor": 0.6754676284981589, "none": -0.16738057281711888}, "property_magnitude": {"car": 0.08779871649521079, "life insurance": 0.019088552279460724, "no known property": -0.38443306455303633, "real estate": 0.2902361102837506}, "other_payment_plans": {"bank": -0.23067855371810023, "none": 0.37635379894268367, "stores": -0.13298493071919212}, "housing": {"for free": 0.25125920506453214, "own": 0.09254647062225296, "rent": -0.3311153611813919}, "job": {"high qualif/self emp/mgmt": -0.04900468285726848, "skilled": -0.11670952083882392, "unemp/unskilled non res": 0.26543867672561317, "unskilled resident": -0.08703415852413594}, "own_telephone": {"none": -0.13959825236297665, "yes": 0.15228856686835873}, "foreign_worker": {"no": 0.5917310080272798, "yes": -0.5790406935218895}}}, "blind": {"b0": 1.8069317190536596, "num": {"duration": [20.903, 12.05278353742406, -0.3479343525730886], "credit_amount": [3271.258, 2821.325154503819, -0.3005052877334399], "installment_commitment": [2.973, 1.1181551770662197, -0.3050687369349739], "residence_since": [2.845, 1.103165898675267, 0.010312406027162322], "existing_credits": [1.407, 0.5773655687690415, -0.13392055689596882], "num_dependents": [1.155, 0.3619046835839497, -0.014075861675214324]}, "cat": {"checking_status": {"0<=X<200": -0.38469347516916297, "<0": -0.7390304588259639, ">=200": 0.20446887712553274, "no checking": 0.9209780150961413}, "credit_history": {"all paid": -0.6195134636540917, "critical/other existing credit": 0.8256253537911655, "delayed previously": 0.2851869299604616, "existing paid": -0.010156646479882538, "no credits/all paid": -0.4794192153911145}, "purpose": {"business": -0.02680699944090816, "domestic appliance": -0.1543983018673636, "education": -0.6913436966176189, "furniture/equipment": -0.009096428201905935, "new car": -0.6779452375997219, "other": 0.4192771666075779, "radio/tv": 0.14357954444021462, "repairs": -0.3590414762980935, "retraining": 0.5478586581414556, "used car": 0.8096397290629105}, "savings_status": {"100<=X<500": -0.25782867799663833, "500<=X<1000": -0.10379636711132036, "<100": -0.5651598328392513, ">=1000": 0.5644061887598288, "no known savings": 0.36410164741392637}, "employment": {"1<=X<4": -0.13037947775734027, "4<=X<7": 0.5503098198713077, "<1": -0.34731902166723155, ">=7": 0.11360933085288707, "unemployed": -0.18449769307307315}, "other_parties": {"co applicant": -0.4680201815809897, "guarantor": 0.6776733401563916, "none": -0.207930200348854}, "property_magnitude": {"car": 0.05880008629048923, "life insurance": 0.019035883525643837, "no known property": -0.34513365882827296, "real estate": 0.2690206472386875}, "other_payment_plans": {"bank": -0.23489809238020348, "none": 0.3326741032418141, "stores": -0.09605305263506629}, "housing": {"for free": 0.3490533863941658, "own": 0.10554797115659736, "rent": -0.45287839932421586}, "job": {"high qualif/self emp/mgmt": -0.057085865258672014, "skilled": -0.13396469431448021, "unemp/unskilled non res": 0.2513553091532155, "unskilled resident": -0.05858179135350857}, "own_telephone": {"none": -0.1590551123182014, "yes": 0.16077807054474869}, "foreign_worker": {"no": 0.6025412441372191, "yes": -0.6008182859106704}}}}, "cut": {"full": 0.5, "blind": 0.5}, "defaults": {"checking_status": "no checking", "duration": 18.0, "credit_history": "existing paid", "purpose": "radio/tv", "credit_amount": 2319.5, "savings_status": "<100", "employment": "1<=X<4", "installment_commitment": 3.0, "personal_status": "male single", "other_parties": "none", "residence_since": 3.0, "property_magnitude": "car", "age": 33.0, "other_payment_plans": "none", "housing": "own", "existing_credits": 1.0, "job": "skilled", "num_dependents": 1.0, "own_telephone": "none", "foreign_worker": "yes"}, "form": [{"id": "age", "label": "Age", "col": "age", "kind": "range", "min": 19, "max": 75, "default": 33}, {"id": "sex", "label": "Sex", "col": "personal_status", "kind": "sex", "choices": ["female", "male"], "default": "female", "map": {"female": "female div/dep/mar", "male": "male single"}}, {"id": "duration", "label": "Duration (months)", "col": "duration", "kind": "range", "min": 4, "max": 72, "default": 18}, {"id": "credit_amount", "label": "Loan amount (DM)", "col": "credit_amount", "kind": "range", "min": 250, "max": 18424, "default": 2320}, {"id": "checking_status", "label": "Checking account", "col": "checking_status", "kind": "select", "choices": ["no checking", "<0", "0<=X<200", ">=200"], "default": "no checking"}, {"id": "savings_status", "label": "Savings", "col": "savings_status", "kind": "select", "choices": ["<100", "no known savings", "100<=X<500", "500<=X<1000", ">=1000"], "default": "<100"}, {"id": "employment", "label": "Time in current job", "col": "employment", "kind": "select", "choices": ["1<=X<4", ">=7", "4<=X<7", "<1", "unemployed"], "default": "1<=X<4"}, {"id": "housing", "label": "Housing", "col": "housing", "kind": "select", "choices": ["own", "rent", "for free"], "default": "own"}, {"id": "purpose", "label": "Purpose", "col": "purpose", "kind": "select", "choices": ["radio/tv", "new car", "furniture/equipment", "used car", "business", "education", "repairs", "domestic appliance", "other", "retraining"], "default": "radio/tv"}], "cases": [{"label": "Age set to 24", "set": {"age": 24}}, {"label": "Age set to 45", "set": {"age": 45}}, {"label": "Sex set to female", "set": {"sex": "female"}}, {"label": "Sex set to male", "set": {"sex": "male"}}], "drivers": {"age": [{"feature": "checking_status", "effect": -0.26, "note": "no checking: 26% vs 42%"}, {"feature": "housing", "effect": -0.21, "note": "rent: 46% vs 13%"}, {"feature": "credit_history", "effect": -0.13, "note": "critical/other existing credit: 15% vs 32%"}, {"feature": "employment", "effect": -0.08, "note": "<1: 30% vs 15%"}, {"feature": "installment_commitment", "effect": 0.06, "note": "3 vs 3"}], "sex": [{"feature": "housing", "effect": -0.12, "note": "rent: 31% vs 12%"}, {"feature": "employment", "effect": -0.09, "note": "<1: 28% vs 12%"}, {"feature": "credit_history", "effect": -0.07, "note": "critical/other existing credit: 25% vs 31%"}, {"feature": "duration", "effect": 0.06, "note": "19 vs 22"}, {"feature": "credit_amount", "effect": 0.06, "note": "2,878 vs 3,448"}]}, "standins": {"age": [{"feature": "job = high qualif/self emp/mgmt", "toward": "25 and over"}, {"feature": "employment = >=7", "toward": "25 and over"}, {"feature": "housing = rent", "toward": "under 25"}, {"feature": "credit_history = no credits/all paid", "toward": "25 and over"}, {"feature": "purpose = business", "toward": "25 and over"}], "sex": [{"feature": "employment = <1", "toward": "female"}, {"feature": "purpose = education", "toward": "female"}, {"feature": "housing = rent", "toward": "female"}, {"feature": "num_dependents", "toward": "male"}, {"feature": "employment = >=7", "toward": "male"}]}, "mistakes": [{"kind": "Approved, but a bad risk", "p": 0.98, "applicant": {"age": 28, "duration": 12, "credit_amount": 939, "checking_status": ">=200", "savings_status": "500<=X<1000", "employment": "4<=X<7", "housing": "own", "purpose": "new car"}}, {"kind": "Approved, but a bad risk", "p": 0.97, "applicant": {"age": 39, "duration": 15, "credit_amount": 1271, "checking_status": ">=200", "savings_status": "no known savings", "employment": "1<=X<4", "housing": "for free", "purpose": "radio/tv"}}, {"kind": "Approved, but a bad risk", "p": 0.94, "applicant": {"age": 37, "duration": 24, "credit_amount": 1344, "checking_status": ">=200", "savings_status": "no known savings", "employment": "4<=X<7", "housing": "own", "purpose": "new car"}}, {"kind": "Declined, but a good risk", "p": 0.12, "applicant": {"age": 54, "duration": 36, "credit_amount": 7432, "checking_status": "0<=X<200", "savings_status": "<100", "employment": "1<=X<4", "housing": "rent", "purpose": "new car"}}, {"kind": "Declined, but a good risk", "p": 0.15, "applicant": {"age": 65, "duration": 42, "credit_amount": 3394, "checking_status": "<0", "savings_status": "<100", "employment": "unemployed", "housing": "own", "purpose": "repairs"}}]}}/*END*/;
+const E=DATA.extra,M=E.model,$=s=>document.querySelector(s),K=Object.keys;let A=K(DATA.groups)[0];
+const mk=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const sv=(t,a,x)=>{const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);if(x!=null)e.textContent=x;return e};
+const fmt=v=>(v>0?"+":"")+v.toFixed(1),nm=s=>String(s).replace(/_/g," "),d=r=>fmt(r[0]-r[1]),P=x=>x.toFixed(1);
+function tbl(el,h,rows){el.innerHTML="";const t=mk("table"),th=mk("tr");h.forEach(x=>th.append(mk("th","",x)));t.append(th);rows.forEach(r=>{const tr=mk("tr");r.forEach(x=>{const td=mk("td","",typeof x==="object"?x.t:x);if(typeof x==="object"){td.className="bar";td.style.setProperty("--w",x.w+"%")}tr.append(td)});t.append(tr)});el.append(t)}
+function seg(el,items,cur,fn){el.innerHTML="";items.forEach(i=>{const b=mk("button","",i);if(i===cur)b.className="on";b.onclick=()=>{fn(i);results()};el.append(b)})}
+const seen=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){seen.unobserve(x.target);count(x.target)}}),{threshold:.6});
+function count(e){const m=e.textContent.match(/^([+-]?)(\d[\d,]*\.?\d*)(.*)$/);if(!m)return;const to=parseFloat(m[2].replace(/,/g,"")),dec=(m[2].split(".")[1]||"").length,t0=performance.now();
+const f=t=>{const k=Math.min(1,(t-t0)/900),v=to*(1-Math.pow(1-k,3));e.textContent=m[1]+v.toFixed(dec)+m[3];if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
+$(".hc h1").textContent=DATA.hero;$("#badge").textContent=DATA.dataset+" · "+DATA.rows.toLocaleString()+" applicants";
+// 02 try it: the model weights run in the browser, no server
+const prob=(m,r)=>{let z=m.b0;for(const c in m.num){const[a,s,w]=m.num[c];z+=w*(r[c]-a)/s}for(const c in m.cat)z+=m.cat[c][r[c]]||0;return 1/(1+Math.exp(-z))};
+const V={};E.form.forEach(f=>V[f.id]=f.default);
+const row=v=>{const r={...E.defaults};E.form.forEach(f=>{r[f.col]=f.map?f.map[v[f.id]]:v[f.id]});return r};
+E.form.forEach(f=>{const l=mk("label","fld"),s=mk("span","",f.label);let el;
+if(f.kind==="range"){el=mk("input");el.type="range";el.min=f.min;el.max=f.max;el.step=Math.max(1,Math.round((f.max-f.min)/250));el.value=f.default;const o=mk("b","",f.default.toLocaleString());el.oninput=()=>{V[f.id]=+el.value;o.textContent=(+el.value).toLocaleString();run()};s.append(" ",o)}
+else{el=mk("select");f.choices.forEach(c=>{const o=mk("option","",c);o.value=c;if(c===f.default)o.selected=true;el.append(o)});el.onchange=()=>{V[f.id]=el.value;run()}}
+l.append(s,el);$("#form").append(l)});
+function dial(el,p,cut,label){el.innerHTML="";const m=mk("div","meter"),i=mk("i"),u=mk("u");i.style.width=p*100+"%";u.style.left=cut*100+"%";m.append(i,u);
+el.append(mk("div","big",Math.round(p*100)+"%"),mk("div","dec",label+": "+(p>=cut?"approve":"decline")+" at a "+cut.toFixed(2)+" cutoff"),m)}
+function run(){const r=row(V);dial($("#df"),prob(M.full,r),E.cut.full,"Full model");dial($("#db"),prob(M.blind,r),E.cut.blind,"Blind model");
+tbl($("#cf"),["Same applicant, one change","Full","Blind"],[{label:"As entered",set:{}},...E.cases].map(c=>{const x=row({...V,...c.set});return[c.label,Math.round(prob(M.full,x)*100)+"%",Math.round(prob(M.blind,x)*100)+"%"]}))}
+run();
+// 03 results
+function chart(){const el=$("#chart");el.innerHTML="";const R=DATA.res[A],ks=K(R).filter(k=>k!=="approve everyone"&&R[k][3]!=null);
+const M2=Math.max(10,Math.ceil(Math.max(...ks.flatMap(k=>[Math.abs(R[k][3]),Math.abs(R[k][4])]))/5)*5),W=640,H=ks.length*46+40,L=170,Ed=W-24,x=v=>L+(v+M2)/(2*M2)*(Ed-L),s=sv("svg",{viewBox:"0 0 "+W+" "+H,role:"img"});
+s.append(sv("line",{x1:x(0),x2:x(0),y1:6,y2:H-28,class:"z"}));
+ks.forEach((k,i)=>{const r=R[k],y=26+i*46,g=r[0]-r[1];s.append(sv("text",{x:0,y:y+4,class:"lb"},k),sv("line",{x1:x(r[3]),x2:x(r[4]),y1:y,y2:y,class:"wh"}),sv("circle",{cx:x(g),cy:y,r:7,class:g<0?"d n":"d p"}))});
+[-M2,0,M2].forEach(v=>s.append(sv("text",{x:x(v),y:H-8,class:"ax","text-anchor":"middle"},(v>0?"+":"")+v)));el.append(s)}
+function results(){const R=DATA.res[A],g=DATA.groups[A],b=R["blind model"],f=R["full model"],base=R["approve everyone"],cost=base[5]!=null;seg($("#sa"),K(DATA.groups),A,v=>A=v);
+$("#rint").textContent="Results below use "+DATA.dataset+". The simple rule approves every applicant. "+(cost?"Cost counts a bad loan approved as "+DATA.cost_fp+" and a good loan declined as 1, the weights in the dataset’s documentation. Lower is better.":"This dataset has no cost weights, so we compare accuracy and approval rates.");
+const items=[[P(b[2])+"%","Blind model accuracy. Approving everyone scores "+P(base[2])+"%."]];if(cost)items.push([b[5].toFixed(2),"Cost per applicant for the blind model. Approving everyone costs "+base[5].toFixed(2)+"."]);
+items.push([fmt(f[0]-f[1]),"Approval gap in points for "+g.other+" applicants in the full model. Range "+fmt(f[3])+" to "+fmt(f[4])+"."]);
+$("#hl").innerHTML="";items.forEach(([n,c])=>{const w=mk("div"),e=mk("div","n",n);w.append(e,mk("div","c",c));$("#hl").append(w);seen.observe(e)});
+tbl($("#tbl"),["Strategy","Accuracy",...(cost?["Cost"]:[]),g.other+" approved",g.ref+" approved","Gap (range)"],K(R).map(k=>{const r=R[k];return[k,r[2]==null?"n/a":P(r[2])+"%",...(cost?[r[5]==null?"n/a":r[5].toFixed(2)]:[]),{t:P(r[0])+"%",w:r[0]},{t:P(r[1])+"%",w:r[1]},fmt(r[0]-r[1])+" ("+fmt(r[3])+" to "+fmt(r[4])+")"]}));
+chart();
+$("#dnote").textContent="Effect on the blind model’s score (log-odds). A negative bar lowers the "+g.other+" group’s average score.";
+$("#drv").innerHTML="";const D=E.drivers[A],mx=Math.max(...D.map(r=>Math.abs(r.effect)),.01);
+D.forEach(r=>{const w=mk("div","dv"),n=mk("div"),t=mk("div","dt"),bar=mk("i","db "+(r.effect<0?"n":"p"));bar.style.width=Math.abs(r.effect)/mx*50+"%";t.append(bar);n.append(mk("div","",nm(r.feature)),mk("small","",r.note));w.append(n,t,mk("b","",(r.effect>0?"+":"")+r.effect.toFixed(2)));$("#drv").append(w)});
+$("#gauge").style.setProperty("--p",Math.max(0,(DATA.proxy[A]-.5)/.5*100));$("#gv").textContent=DATA.proxy[A].toFixed(2);
+$("#proxy").textContent="Without the protected columns, the other columns predict "+g.other+" status with AUC "+DATA.proxy[A].toFixed(2)+" (0.5 is chance). Strongest stand-ins:";
+$("#sti").innerHTML="";E.standins[A].forEach(r=>{const c=mk("span","chip",nm(r.feature)+" → ");c.append(mk("b","",r.toward));$("#sti").append(c)})}
+results();
+// 05 failures
+E.mistakes.forEach(m=>{const c=mk("div","mc"),a=m.applicant;c.append(mk("div","big",Math.round(m.p*100)+"%"),mk("div","dec",DATA.p_label),mk("h3","",m.kind),mk("p","",K(a).map(k=>nm(k)+" "+a[k]).join(", ")));$("#mis").append(c)});
+$("#lim").textContent=DATA.fail_note+" "+DATA.caveat+" Ranges across splits understate uncertainty about new applicants, and the smallest group has "+Math.min(...K(DATA.groups).map(a=>DATA.groups[a].n[0])).toLocaleString()+" applicants. Group cutoffs use a protected trait at decision time, which some jurisdictions restrict.";
+// 06 added
+(function(){const a0=K(DATA.res)[0],R=DATA.res[a0],b=R["blind model"],g=R["blind + group cutoffs"],c=R["blind + cost cutoff"],base=R["approve everyone"];
+const L=[["A proxy check","With the protected columns removed, the other columns still predict "+K(DATA.groups).map(a=>DATA.groups[a].other+" (AUC "+DATA.proxy[a].toFixed(2)+")").join(" and ")+"."],
+["A fix with a price","A separate approval cutoff per group moves the "+a0+" gap from "+d(R["full model"])+" to "+d(g)+" points, and accuracy from "+P(b[2])+"% to "+P(g[2])+"%. The range across splits is wide."]];
+if(c&&base[5]!=null)L.push(["The dataset’s own costs","Cost per applicant falls from "+base[5].toFixed(2)+" (approve everyone) to "+b[5].toFixed(2)+" (blind model) and "+c[5].toFixed(2)+" at the cost-based cutoff, which approves "+P(c[0])+"% of "+DATA.groups[a0].other+" applicants against "+P(c[1])+"% of the rest."]);
+L.push(["What drives each gap","Which features account for the difference, and which columns stand in for the protected trait."],["Today’s rules","What changed for US lenders in July 2026, in the timeline below."]);
+L.forEach(([t,x],i)=>{const w=mk("div","card");w.append(mk("div","n2","0"+(i+1)),mk("h3","",t),mk("p","",x));$("#add").append(w)})})();
+$("#foot").textContent="This project is a prototype and is not financial advice. Data: "+DATA.dataset+" ("+DATA.source+"). Tools: scikit-learn, pandas. AI tools: Claude (Anthropic) drafted the code and text; the team reviewed them. Everything on this page runs in your browser.";
+// hero: scroll through the tunnel
+(function(){const g=$("#tun");for(let i=0;i<13;i++){const k=Math.pow(.8,i),w=1900*k,h=1300*k,c=Math.round(205-i/12*125);g.append(sv("rect",{x:600-w/2,y:360-h/2,width:w,height:h,rx:w*.42,fill:"rgb("+c+","+(c+14)+","+(c+28)+")",stroke:"#ffffff","stroke-opacity":.16,"stroke-width":2}))}})();
+const io=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add("in")),{threshold:.12});
+document.querySelectorAll(".rv").forEach(s=>io.observe(s));
+const links=[...document.querySelectorAll("nav a")],secs=links.map(a=>$(a.hash)),calm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+addEventListener("scroll",()=>{const h=document.documentElement,hv=$(".hero").offsetHeight-innerHeight,p=Math.min(1,scrollY/hv);$("#nv").classList.toggle("solid",scrollY>hv-60);
+if(!calm){$("#tun").setAttribute("transform","translate(600 360) scale("+(1+p*2.6)+") translate(-600 -360)");$("#ring").style.transform="translate(600px,"+(330+p*70)+"px) rotate("+(-14+p*30)+"deg) scale("+(1+p*.9)+")";$(".hc").style.opacity=Math.max(0,1-p*1.7);$(".cue").style.opacity=Math.max(0,1-p*4)}
+$("#bar").style.width=(100*scrollY/(h.scrollHeight-innerHeight))+"%";let k=-1;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<innerHeight*.4)k=i});links.forEach((a,i)=>a.classList.toggle("on",i===k))},{passive:true});
+
+// 02 data: HMDA originated loans by purpose (FFIEC Data Browser summary)
+const HM=[["Home purchase",3592033,1451864575000],["Home improvement",613448,84338350000],["Refinancing",1042078,499583060000],["Cash-out refinancing",953349,265858915000],["Other purpose",624151,99868095000],["Not applicable",2832,5659120000]];
+const money=x=>"$"+Math.round(x).toLocaleString(),HMn=HM.reduce((a,r)=>a+r[1],0),HMd=HM.reduce((a,r)=>a+r[2],0),avg=r=>r[2]/r[1];
+[[(HMn/1e6).toFixed(2)+"M","originated loans in the summary."],["$"+(HMd/1e12).toFixed(2)+" trillion","lent across those loans."],[(HM[0][1]/HMn*100).toFixed(0)+"%","of loans were for a home purchase, with an average of "+money(avg(HM[0]))+"."]].forEach(([n,c])=>{const w=mk("div"),e=mk("div","n",n);w.append(e,mk("div","c",c));$("#hmhl").append(w);seen.observe(e)});
+HM.forEach(r=>{const w=mk("div","hb"),t=mk("div","tr"),i=mk("i");i.style.width=r[1]/HM[0][1]*100+"%";t.append(i);w.append(mk("span","",r[0]),t,mk("b","",r[1].toLocaleString()+" · avg "+money(avg(r))));$("#hmb").append(w)});
+// 03 check: affordability from income, tenure and assumptions; credit history is a simulated lookup
+HM.slice(0,5).forEach(r=>{const o=mk("option","",r[0]);o.value=r[0];$("#pur").append(o)});
+const HIST=[["Clean file: all credits paid back",0],["Existing credits paid back on time",0],["No credits taken",0],["Delays in paying in the past",1],["Critical account or credits elsewhere",1]];
+HIST.forEach(([t])=>{const o=mk("option","",t);o.value=t;$("#hist").append(o)});
+function elig(){const inc=+$("#inc").value||0,sav=+$("#sav").value||0,n=+$("#ten").value,amt=+$("#amt").value||0,sh=+$("#shr").value/100,r=(+$("#rate").value||0)/1200;
+const f=r>0?(1-Math.pow(1+r,-n))/r:n,lim=inc*sh*f,pay=amt/f,hi=(HIST.find(x=>x[0]===$("#hist").value)||HIST[0])[1],pr=HM.find(x=>x[0]===$("#pur").value)||HM[0];
+$("#tenv").textContent=n+" months ("+(n/12)+" years)";$("#shrv").textContent=Math.round(sh*100)+"%";
+$("#ev").textContent="Up to "+money(lim);$("#evd").textContent="Estimated loan amount eligibility at a "+Math.round(sh*100)+"% payment share, "+(r*1200).toFixed(1)+"% interest, "+n+" months.";
+const ok=amt<=lim;$("#kv").innerHTML="";[["Requested amount",money(amt)],["Within the limit?",ok?"Yes":"No, "+money(amt-lim)+" over"],["Monthly payment on the request",money(pay)+(inc?" ("+(pay/inc*100).toFixed(0)+"% of income)":"")],["Monthly savings vs that payment",pay?(sav/pay*100).toFixed(0)+"%":"n/a"],["Average HMDA "+pr[0].toLowerCase()+" loan",money(avg(pr))],["Credit file (simulated)",$("#hist").value]].forEach(([a,b])=>{$("#kv").append(mk("span","",a),mk("b","",b))});
+$("#flag").textContent=hi?"Adverse credit history: refer this application to a credit officer. The estimate above is only an affordability limit.":"";$("#flag").style.display=hi?"block":"none"}
+$("#cform").oninput=elig;elig();
+// the assistant. Built-in answers work offline. With AGENT_URL or a Gemini key it becomes generative.
+const NOTES={who:"A credit officer at a small lender who approves or declines loans, and the compliance reviewer who checks the model for unfair treatment by protected traits.",
+rule:"A CFPB final rule amending Regulation B took effect July 21, 2026. It removes the effects test and states that ECOA does not authorize disparate-impact liability. Disparate treatment and intentional use of proxies stay prohibited per law-firm summaries. The Fair Housing Act and state laws are unchanged and a court challenge was filed. Not legal advice.",
+glossary:"Accuracy: share of applicants classified correctly. Approval gap: first group minus reference group, in percentage points. Blind model: protected columns removed. Group cutoffs: a separate approval threshold per group so true positive rates match. Proxy AUC: how well the remaining columns predict the protected trait, 0.5 is chance."+(DATA.cost_fp?" Cost: "+DATA.cost_fp+" for each bad risk approved, 1 for each good risk declined, averaged per applicant. Cost cutoff: approve only if the chance of repayment is at least "+DATA.cost_fp+"/"+(DATA.cost_fp+1)+".":""),
+hmda:"HMDA summary of originated loans by purpose: "+HM.map(r=>r[0]+" "+r[1].toLocaleString()+" loans, "+money(r[2])).join("; ")+".",
+judges:"Judges ask how you know it works (compare with the approve-everyone baseline on held-out data), what would cause it to fail, and who would use it."};
+const ctx=()=>"DATA: "+JSON.stringify({...DATA,extra:{drivers:E.drivers,standins:E.standins,mistakes:E.mistakes}})+"\nNOTES: "+JSON.stringify(NOTES);
+const SYS="You answer questions inside a loan-model fairness audit built for a high school hackathon. Use only the DATA and NOTES below. Quote exact numbers. If the answer is not in them, say so. Use under 120 words, plain text, no legal or financial advice.";
+const a0=K(DATA.res)[0],R0=DATA.res[a0],G0=DATA.groups[a0],cost0=R0["approve everyone"][5]!=null;
+const KB=[
+{r:[/work|trust|baseline|beat|accura|simple rule/,/how do you know/],a:()=>"On held-out data the blind model is "+P(R0["blind model"][2])+"% accurate against "+P(R0["approve everyone"][2])+"% for approving everyone"+(cost0?", and its cost per applicant is "+R0["blind model"][5].toFixed(2)+" against "+R0["approve everyone"][5].toFixed(2):"")+". Results average "+DATA.splits+" random splits, each scored on applicants the model had not seen."},
+{r:[/fail|wrong|mistake|limit|weak|break|risk/,/cause/],a:()=>DATA.fail_note+" The smallest group has "+Math.min(...K(DATA.groups).map(a=>DATA.groups[a].n[0])).toLocaleString()+" applicants, so ranges are wide. "+DATA.caveat},
+{r:[/who|user|officer|reviewer|customer|use this/],a:()=>NOTES.who},
+{r:[/rule|law|regulat|ecoa|legal|cfpb|court/],a:()=>NOTES.rule},
+{r:[/proxy|stand|auc|remov|indirect/],a:()=>K(DATA.proxy).map(a=>DATA.groups[a].other+": AUC "+DATA.proxy[a]).join("; ")+". These use only the columns left after removing protected traits, and 0.5 is chance, so dropping the column does not remove the signal. Top stand-ins for "+a0+": "+E.standins[a0].slice(0,3).map(x=>nm(x.feature)).join("; ")+"."},
+{r:[/cost|threshold|five|5:1|expens/],a:()=>R0["blind + cost cutoff"]?"Pricing a bad approval at "+DATA.cost_fp+" and a declined good loan at 1 puts the cutoff at "+(DATA.cost_fp/(DATA.cost_fp+1)).toFixed(2)+". Cost per applicant falls to "+R0["blind + cost cutoff"][5].toFixed(2)+", but accuracy drops to "+P(R0["blind + cost cutoff"][2])+"% and "+G0.other+" approvals fall to "+P(R0["blind + cost cutoff"][0])+"% against "+P(R0["blind + cost cutoff"][1])+".":"This dataset has no cost weights, so cost is not reported."},
+{r:[/fix|mitigat|narrow|group|cutoff|improv/],a:()=>"Group cutoffs move the "+a0+" gap from "+d(R0["full model"])+" (full model) to "+d(R0["blind + group cutoffs"])+" points, and accuracy goes from "+P(R0["blind model"][2])+"% to "+P(R0["blind + group cutoffs"][2])+"%. The range across splits is wide, so treat it as a trade-off, not a cure."},
+{r:[/driv|feature|why|explain|reason/],a:()=>"The largest contributors to the "+a0+" gap in the blind model: "+E.drivers[a0].slice(0,3).map(x=>nm(x.feature)+" ("+x.note+")").join("; ")+"."},
+{r:[/data|sample|rows|how many|source|dataset/],a:()=>DATA.dataset+": "+DATA.rows.toLocaleString()+" applicants. "+K(DATA.groups).map(a=>DATA.groups[a].other+" "+DATA.groups[a].n[0].toLocaleString()+" vs "+DATA.groups[a].ref+" "+DATA.groups[a].n[1].toLocaleString()).join("; ")+"."},
+{r:[/hmda|summary|originat|trillion|mortgage/],a:()=>NOTES.hmda+" The fairness audit itself runs on "+DATA.dataset+"."},
+{r:[/eligib|afford|income|saving|tenure|borrow|credit file|history/],a:()=>"The Check section estimates the largest loan the income can carry: monthly income times a payment share (35% by default, an assumption you can change) turned into a loan amount using the interest rate and tenure. Credit history is a simulated lookup, and an adverse history sends the file to a credit officer. Name, address and telephone are not used and never leave the browser."},
+{r:[/try|enter|input|slider|demo|counterfactual/],a:()=>"Use the Fairness test section. Enter an applicant, then change one detail such as age or sex. The full model’s estimate moves when a protected trait changes, and the blind model’s does not."}];
+function local(q){q=q.toLowerCase();let best=null,sc=0;KB.forEach(k=>{const s=k.r.filter(x=>x.test(q)).length;if(s>sc){sc=s;best=k}});
+return best?best.a():a0+" ("+G0.other+" vs "+G0.ref+"): the full model’s approval gap is "+d(R0["full model"])+" points, the blind model’s "+d(R0["blind model"])+", and with group cutoffs "+d(R0["blind + group cutoffs"])+". Accuracy is "+P(R0["blind model"][2])+"% against "+P(R0["approve everyone"][2])+"% for approving everyone."}
+let gkey="";const GM="gemini-flash-latest";
+const mode=()=>{$("#mode").textContent="";$("#mode").append(AGENT_URL?"Live answers from a Gemini model.":gkey?"Answering with Gemini using your key. ":"Built-in answers from the audit numbers. ");if(!AGENT_URL){const a=mk("a","",gkey?"Change key":"Add a Gemini key for open questions");a.onclick=()=>$("#kf").classList.toggle("on");$("#mode").append(a)}};mode();
+function say(t,c){const m=mk("div","m "+c,t);$("#log").append(m);$("#log").scrollTop=1e9;return m}
+async function remote(q){const r=await fetch(AGENT_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,context:ctx()})}),j=await r.json();if(!j.text)throw new Error(j.error||"no answer");return j.text}
+async function gem(q){const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+GM+":generateContent?key="+encodeURIComponent(gkey),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({systemInstruction:{parts:[{text:SYS}]},contents:[{role:"user",parts:[{text:ctx()+"\n\nQuestion: "+q}]}]})});
+const j=await r.json(),t=j.candidates&&j.candidates[0].content.parts[0].text;if(!t)throw new Error(JSON.stringify(j.error||j).slice(0,120));return t}
+async function ask(q){say(q,"u");const m=say("Thinking…","a");let pre="";
+if(AGENT_URL||gkey){try{m.textContent=await(AGENT_URL?remote(q):gem(q));return}catch(e){pre="The live call failed ("+e.message+"). Built-in answer:\n"}}
+m.textContent=pre+local(q)}
+$("#fab").onclick=()=>{$("#ag").classList.toggle("open");if(!$("#log").children.length)say("Ask about the results, the rules or how the model could fail.","a")};
+["How do you know it works?","What would cause it to fail?","Who would use this?","What drives the gap?","What changed in the rules?"].forEach(t=>{const b=mk("button","",t);b.type="button";b.onclick=()=>ask(t);$("#chips").append(b)});
+$("#f").onsubmit=e=>{e.preventDefault();const v=$("#q").value.trim();if(v){$("#q").value="";ask(v)}};
+$("#kf").onsubmit=e=>{e.preventDefault();gkey=$("#kq").value.trim();$("#kq").value="";$("#kf").classList.remove("on");mode()};
+</script></body></html>
